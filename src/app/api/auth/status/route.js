@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const userData = getCurrentUser();
+    const userData = await getCurrentUser();
 
     if (!userData) {
       return NextResponse.json({

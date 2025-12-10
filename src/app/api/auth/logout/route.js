@@ -4,7 +4,7 @@ import { removeAuthCookie } from "@/lib/auth";
 export async function POST() {
   try {
     // Remove authentication cookie
-    removeAuthCookie();
+    await removeAuthCookie();
 
     return NextResponse.json({
       success: true,

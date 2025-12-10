@@ -1,0 +1,95 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: "#e6f5f5",
+          100: "#b3e6e6",
+          200: "#80d6d6",
+          300: "#4dc6c6",
+          400: "#26bbbb",
+          500: "#00aaaa",
+          600: "#009898",
+          700: "#008686",
+          800: "#007474",
+          900: "#006262",
+        },
+        secondary: {
+          50: "#fff8f0",
+          100: "#ffe9d1",
+          200: "#ffd7ad",
+          300: "#ffc589",
+          400: "#ffb366",
+          500: "#ff9933",
+          600: "#ff8000",
+          700: "#cc6600",
+          800: "#994c00",
+          900: "#663300",
+        },
+        neutral: {
+          50: "#f2f2f2",
+          100: "#e6e6e6",
+          200: "#cccccc",
+          300: "#b3b3b3",
+          400: "#999999",
+          500: "#808080",
+          600: "#666666",
+          700: "#4d4d4d",
+          800: "#333333",
+          900: "#1a1a1a",
+        },
+        background: {
+          light: "#e6f5f5",
+          DEFAULT: "#ffffff",
+          dark: "#f2f2f2",
+        },
+      },
+      fontFamily: {
+        sans: [
+          '"Inter"',
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "Roboto",
+          '"Helvetica Neue"',
+          "Arial",
+          "sans-serif",
+        ],
+        display: [
+          '"Inter"',
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "Roboto",
+          '"Helvetica Neue"',
+          "Arial",
+          "sans-serif",
+        ],
+      },
+      borderRadius: {
+        DEFAULT: "0.375rem",
+        sm: "0.25rem",
+        md: "0.375rem",
+        lg: "0.5rem",
+        xl: "1rem",
+        "2xl": "1.5rem",
+      },
+      boxShadow: {
+        DEFAULT:
+          "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+        card: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        "card-hover":
+          "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      },
+    },
+  },
+  plugins: [],
+};

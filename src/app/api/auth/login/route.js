@@ -53,7 +53,7 @@ export async function POST(req) {
     const token = generateToken(user);
 
     // Set auth cookie
-    setAuthCookie(token);
+    await setAuthCookie(token);
 
     // Return user data (excluding sensitive information)
     return NextResponse.json({

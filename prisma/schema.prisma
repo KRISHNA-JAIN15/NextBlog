@@ -24,6 +24,7 @@ model BlogPost {
     id        Int       @id @default(autoincrement())
     title     String
     content   String?
+    topic     Topic
     published Boolean   @default(false)
     type      PostType  @default(FREE)
     authorId  Int
@@ -43,4 +44,12 @@ model Comment {
 enum PostType {
     FREE
     PAID
+}
+
+enum Topic {
+    TECHNOLOGY
+    HEALTH
+    LIFESTYLE
+    EDUCATION
+    ENTERTAINMENT
 }

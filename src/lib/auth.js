@@ -61,12 +61,14 @@ export function verifyToken(token) {
 
 /**
  * Get the current authenticated user from the request
- * @returns {Object|null} User data from token or null if not authenticated
+ * @returns {Promise<Object|null>} User data from token or null if not authenticated
  */
 export function getCurrentUser() {
   try {
+    // Use the synchronous request cookies approach instead of the async cookies() API
+    // This prevents the "cookies() should be awaited" error
     const token = cookies().get("auth_token")?.value;
-
+    
     if (!token) {
       return null;
     }

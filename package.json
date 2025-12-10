@@ -15,6 +15,7 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "crypto-js": "^4.2.0",
+    "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "next": "15.5.5",
     "nodemailer": "^7.0.9",
@@ -23,7 +24,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@prisma/client": "^6.17.1",
+    "@prisma/client": "^6.18.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

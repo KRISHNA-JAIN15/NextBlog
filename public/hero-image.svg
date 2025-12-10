@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="600px" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Blog Hero</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#00AAAA" offset="0%"></stop>
+            <stop stop-color="#008686" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#FF9933" offset="0%"></stop>
+            <stop stop-color="#FF8000" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Blog-Hero" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Background" fill="#F5F5F5" x="0" y="0" width="800" height="600"></rect>
+        <g id="Document-Group" transform="translate(100.000000, 80.000000)">
+            <rect id="Document-BG" fill="#FFFFFF" x="0" y="0" width="400" height="500" rx="8"></rect>
+            <rect id="Header" fill="#E6F5F5" x="30" y="30" width="340" height="60" rx="4"></rect>
+            <rect id="Content-1" fill="#F2F2F2" x="30" y="110" width="340" height="20" rx="4"></rect>
+            <rect id="Content-2" fill="#F2F2F2" x="30" y="140" width="300" height="20" rx="4"></rect>
+            <rect id="Content-3" fill="#F2F2F2" x="30" y="170" width="320" height="20" rx="4"></rect>
+            <rect id="Content-4" fill="#F2F2F2" x="30" y="200" width="280" height="20" rx="4"></rect>
+            <rect id="Content-5" fill="#F2F2F2" x="30" y="250" width="340" height="100" rx="4"></rect>
+            <rect id="Content-6" fill="#F2F2F2" x="30" y="370" width="340" height="20" rx="4"></rect>
+            <rect id="Content-7" fill="#F2F2F2" x="30" y="400" width="260" height="20" rx="4"></rect>
+            <rect id="Content-8" fill="#F2F2F2" x="30" y="430" width="340" height="20" rx="4"></rect>
+        </g>
+        <g id="Icons" transform="translate(520.000000, 180.000000)">
+            <circle id="Icon-BG-1" fill="url(#linearGradient-1)" cx="50" cy="50" r="50"></circle>
+            <circle id="Icon-BG-2" fill="url(#linearGradient-2)" cx="180" cy="160" r="40"></circle>
+            <circle id="Icon-BG-3" fill="#FFFFFF" cx="140" cy="40" r="30"></circle>
+            <path d="M45,50 L55,50 M50,45 L50,55" id="Plus" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M180,155 L180,165 M175,160 L185,160" id="Plus-2" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M135,40 L145,40 M140,35 L140,45" id="Plus-3" stroke="#00AAAA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+        <g id="Lines" transform="translate(450.000000, 130.000000)">
+            <path d="M0,0 C40,20 80,10 100,60 C120,110 150,140 200,120" id="Line-1" stroke="#00AAAA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1,8"></path>
+            <path d="M40,80 C80,100 120,90 140,140 C160,190 190,220 240,200" id="Line-2" stroke="#FF9933" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1,8"></path>
+        </g>
+    </g>
+</svg>
