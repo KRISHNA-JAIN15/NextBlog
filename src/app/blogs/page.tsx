@@ -2,108 +2,105 @@ import React from 'react';
 import { Page } from '@/components/layout/Page';
 import { Container } from '@/components/layout/Container';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import Image from 'next/image';
 import Link from 'next/link';
+import { SearchBar } from '@/components/blog/SearchBar';
 
 export const metadata = {
   title: 'Blogs | NextBlog',
   description: 'Discover articles on NextBlog'
 };
 
-// Function to get blogs with optional filtering
-async function getBlogs(search = '') {
-  // This would be a server-side fetch in a real app
-  // For now, we'll return placeholder data
-  const blogs = [
-    {
-      id: '1',
-      title: 'Getting Started with Next.js',
-      excerpt: 'Learn the basics of Next.js and how to build your first app with the latest App Router features.',
-      author: {
-        name: 'John Doe',
-        image: 'https://i.pravatar.cc/150?u=john'
-      },
-      createdAt: new Date().toISOString(),
-      imageUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97',
-      type: 'FREE',
-      tags: ['Next.js', 'React', 'Frontend']
-    },
-    {
-      id: '2',
-      title: 'The Power of Server Components',
-      excerpt: 'Explore how React Server Components are changing the way we build web applications.',
-      author: {
-        name: 'Jane Smith',
-        image: 'https://i.pravatar.cc/150?u=jane'
-      },
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      imageUrl: 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2',
-      type: 'PAID',
-      tags: ['React', 'Server Components']
-    },
-    {
-      id: '3',
-      title: 'Styling Your Next.js Application',
-      excerpt: 'Learn different approaches to styling your Next.js app, from CSS Modules to Tailwind CSS.',
-      author: {
-        name: 'Alex Johnson',
-        image: 'https://i.pravatar.cc/150?u=alex'
-      },
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      imageUrl: 'https://images.unsplash.com/photo-1593720213428-28a5b9e94613',
-      type: 'FREE',
-      tags: ['CSS', 'Tailwind', 'Styling']
-    },
-    {
-      id: '4',
-      title: 'Building a Blog with Prisma and Next.js',
-      excerpt: 'A comprehensive guide to creating a full-featured blog using Prisma ORM and Next.js.',
-      author: {
-        name: 'Emily Chen',
-        image: 'https://i.pravatar.cc/150?u=emily'
-      },
-      createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-      imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c',
-      type: 'PAID',
-      tags: ['Prisma', 'Next.js', 'Full-stack']
-    },
-    {
-      id: '5',
-      title: 'Authentication in Modern Web Apps',
-      excerpt: 'Implementing secure authentication in your Next.js applications with JWT and Cookies.',
-      author: {
-        name: 'Michael Brown',
-        image: 'https://i.pravatar.cc/150?u=michael'
-      },
-      createdAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
-      imageUrl: 'https://images.unsplash.com/photo-1510915228340-29c85a43dcfe',
-      type: 'FREE',
-      tags: ['Authentication', 'Security', 'JWT']
+// Topic labels for display
+const topicLabels: Record<string, string> = {
+  TECHNOLOGY: 'Technology',
+  HEALTH: 'Health',
+  LIFESTYLE: 'Lifestyle',
+  EDUCATION: 'Education',
+  ENTERTAINMENT: 'Entertainment',
+};
+
+interface BlogPost {
+  id: number;
+  title: string;
+  content: string | null;
+  excerpt: string | null;
+  coverImage: string | null;
+  topic: string;
+  published: boolean;
+  type: 'FREE' | 'PAID';
+  authorId: number;
+  createdAt: string;
+  author: {
+    id: number;
+    name: string | null;
+    email: string;
+  };
+  commentCount: number;
+}
+
+interface BlogsResponse {
+  success: boolean;
+  data: BlogPost[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
+
+// Function to get blogs from API
+async function getBlogs(page: number = 1, limit: number = 9, topic?: string, type?: string, search?: string): Promise<BlogsResponse> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  
+  if (topic) params.append('topic', topic);
+  if (type) params.append('type', type);
+  if (search) params.append('search', search);
+  
+  try {
+    const res = await fetch(`${baseUrl}/api/blog?${params.toString()}`, {
+      cache: 'no-store',
+    });
+    
+    if (!res.ok) {
+      return {
+        success: false,
+        data: [],
+        pagination: { total: 0, page: 1, limit: 9, pages: 0 }
+      };
     }
-  ];
-
-  if (search) {
-    const searchLower = search.toLowerCase();
-    return blogs.filter(
-      blog => 
-        blog.title.toLowerCase().includes(searchLower) || 
-        blog.excerpt.toLowerCase().includes(searchLower) ||
-        blog.tags.some(tag => tag.toLowerCase().includes(searchLower))
-    );
+    
+    return res.json();
+  } catch (error) {
+    console.error('Failed to fetch blogs:', error);
+    return {
+      success: false,
+      data: [],
+      pagination: { total: 0, page: 1, limit: 9, pages: 0 }
+    };
   }
-
-  return blogs;
 }
 
 interface SearchParams {
-  q?: string;
+  page?: string;
+  topic?: string;
+  type?: string;
+  search?: string;
 }
 
 export default async function BlogsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const resolvedParams = await searchParams;
-  const search = resolvedParams.q || '';
-  const blogs = await getBlogs(search);
+  const currentPage = parseInt(resolvedParams.page || '1');
+  const topic = resolvedParams.topic;
+  const type = resolvedParams.type;
+  const search = resolvedParams.search;
+  
+  const { data: blogs, pagination } = await getBlogs(currentPage, 9, topic, type, search);
   
   return (
     <Page>
@@ -119,26 +116,80 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
               Discover insights, tutorials, and stories from our community of writers.
             </p>
             
-            {/* Search Form */}
-            <form className="flex flex-col sm:flex-row gap-4 max-w-2xl">
-              <div className="relative flex-grow">
-                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-500">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <Input
-                  type="search"
-                  placeholder="Search articles, topics, authors..."
-                  name="q"
-                  defaultValue={search}
-                  className="pl-12"
-                />
+            {/* Search Bar */}
+            <div className="mb-8">
+              <SearchBar defaultValue={search || ''} />
+            </div>
+            
+            {/* Active Search */}
+            {search && (
+              <div className="mb-6 flex items-center gap-2">
+                <span className="text-neutral-400">Searching for:</span>
+                <span className="px-3 py-1 bg-primary-500/20 text-primary-400 rounded-full text-sm font-medium">
+                  &quot;{search}&quot;
+                </span>
+                <Link 
+                  href={`/blogs${topic ? `?topic=${topic}` : ''}${type ? `${topic ? '&' : '?'}type=${type}` : ''}`}
+                  className="text-sm text-neutral-500 hover:text-neutral-300 underline"
+                >
+                  Clear search
+                </Link>
               </div>
-              <Button type="submit" size="lg">
-                Search
-              </Button>
-            </form>
+            )}
+            
+            {/* Filters */}
+            <div className="flex flex-col gap-4">
+              {/* Topic Filter */}
+              <div className="flex flex-wrap gap-2">
+                <Link 
+                  href={`/blogs${search ? `?search=${search}` : ''}${type ? `${search ? '&' : '?'}type=${type}` : ''}`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    !topic ? 'bg-primary-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  All Topics
+                </Link>
+                {Object.entries(topicLabels).map(([value, label]) => (
+                  <Link
+                    key={value}
+                    href={`/blogs?topic=${value}${type ? `&type=${type}` : ''}${search ? `&search=${search}` : ''}`}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      topic === value ? 'bg-primary-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+              
+              {/* Type Filter */}
+              <div className="flex gap-2">
+                <Link 
+                  href={`/blogs${topic ? `?topic=${topic}` : ''}${search ? `${topic ? '&' : '?'}search=${search}` : ''}`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    !type ? 'bg-accent-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  All
+                </Link>
+                <Link
+                  href={`/blogs?${topic ? `topic=${topic}&` : ''}type=FREE${search ? `&search=${search}` : ''}`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    type === 'FREE' ? 'bg-accent-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  Free
+                </Link>
+                <Link
+                  href={`/blogs?${topic ? `topic=${topic}&` : ''}type=PAID${search ? `&search=${search}` : ''}`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    type === 'PAID' ? 'bg-accent-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  Premium
+                </Link>
+              </div>
+            </div>
           </div>
           
           {/* Empty State */}
@@ -149,9 +200,11 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <p className="text-lg text-neutral-400 mb-4">No articles found matching your search.</p>
+              <p className="text-lg text-neutral-400 mb-4">
+                {search ? `No articles found for "${search}".` : 'No articles found.'}
+              </p>
               <Button href="/blogs" variant="outline">
-                Clear Search
+                {search ? 'Clear Search' : 'View All Blogs'}
               </Button>
             </div>
           )}
@@ -167,13 +220,21 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
               >
                 {/* Image */}
                 <div className="relative h-56 overflow-hidden">
-                  <Image
-                    src={blog.imageUrl}
-                    alt={blog.title}
-                    width={600}
-                    height={400}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+                  {blog.coverImage ? (
+                    <Image
+                      src={blog.coverImage}
+                      alt={blog.title}
+                      width={600}
+                      height={400}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary-500/20 to-accent-500/20 flex items-center justify-center">
+                      <svg className="w-16 h-16 text-primary-400/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-dark-100 via-transparent to-transparent opacity-60"></div>
                   {blog.type === 'PAID' && (
                     <div className="absolute top-4 right-4 premium-badge text-white text-xs font-bold px-3 py-1.5 rounded-full">
@@ -181,16 +242,11 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
                     </div>
                   )}
                   
-                  {/* Tags overlay */}
+                  {/* Topic overlay */}
                   <div className="absolute bottom-4 left-4 flex gap-2 flex-wrap">
-                    {blog.tags.slice(0, 3).map(tag => (
-                      <span 
-                        key={tag} 
-                        className="text-xs bg-dark-100/80 backdrop-blur-sm text-neutral-300 px-3 py-1.5 rounded-full border border-primary-500/20"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                    <span className="text-xs bg-dark-100/80 backdrop-blur-sm text-neutral-300 px-3 py-1.5 rounded-full border border-primary-500/20">
+                      {topicLabels[blog.topic] || blog.topic}
+                    </span>
                   </div>
                 </div>
                 
@@ -201,22 +257,15 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
                       {blog.title}
                     </Link>
                   </h2>
-                  <p className="text-neutral-400 mb-6 flex-grow line-clamp-2">{blog.excerpt}</p>
+                  <p className="text-neutral-400 mb-6 flex-grow line-clamp-2">{blog.excerpt || 'No excerpt available'}</p>
                   
                   {/* Author & Date */}
                   <div className="flex items-center justify-between pt-4 border-t border-dark-100">
                     <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <Image
-                          src={blog.author.image}
-                          alt={blog.author.name}
-                          width={40}
-                          height={40}
-                          className="rounded-full border-2 border-primary-500/30"
-                        />
-                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-accent-400 rounded-full border-2 border-dark-100"></div>
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-medium">
+                        {blog.author.name?.charAt(0).toUpperCase() || blog.author.email.charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-sm font-medium text-neutral-300">{blog.author.name}</span>
+                      <span className="text-sm font-medium text-neutral-300">{blog.author.name || 'Anonymous'}</span>
                     </div>
                     <span className="text-sm text-neutral-500">
                       {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -225,9 +274,15 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
                 </div>
                 
                 {/* Footer */}
-                <div className="px-6 pb-6">
-                  <Button href={`/blogs/${blog.id}`} fullWidth variant="outline">
-                    Read Article →
+                <div className="px-6 pb-6 flex items-center justify-between">
+                  <span className="text-sm text-neutral-500 flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    {blog.commentCount} comments
+                  </span>
+                  <Button href={`/blogs/${blog.id}`} variant="outline" size="sm">
+                    Read →
                   </Button>
                 </div>
               </div>
@@ -235,23 +290,76 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
           </div>
           
           {/* Pagination */}
-          {blogs.length > 0 && (
+          {pagination.pages > 1 && (
             <div className="mt-16 flex justify-center">
               <nav className="flex items-center gap-2 p-2 rounded-xl bg-dark-100 border border-dark-100">
-                <Button variant="ghost" className="px-4" disabled>
-                  ← Previous
-                </Button>
+                {/* Previous Button */}
+                {currentPage > 1 ? (
+                  <Link 
+                    href={`/blogs?page=${currentPage - 1}${topic ? `&topic=${topic}` : ''}${type ? `&type=${type}` : ''}${search ? `&search=${search}` : ''}`}
+                    className="px-4 py-2 rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-dark-200 transition-colors"
+                  >
+                    ← Previous
+                  </Link>
+                ) : (
+                  <span className="px-4 py-2 rounded-lg text-neutral-600 cursor-not-allowed">
+                    ← Previous
+                  </span>
+                )}
+                
                 <div className="flex items-center gap-1 px-2">
-                  <span className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-500 text-white font-medium">1</span>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-dark-200 transition-colors">2</button>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-dark-200 transition-colors">3</button>
-                  <span className="px-2 text-neutral-500">...</span>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-dark-200 transition-colors">10</button>
+                  {/* Generate page numbers */}
+                  {Array.from({ length: pagination.pages }, (_, i) => i + 1)
+                    .filter(page => {
+                      // Show first page, last page, current page, and pages around current
+                      if (page === 1 || page === pagination.pages) return true;
+                      if (Math.abs(page - currentPage) <= 1) return true;
+                      return false;
+                    })
+                    .map((page, index, array) => {
+                      // Add ellipsis if there's a gap
+                      const showEllipsisBefore = index > 0 && page - array[index - 1] > 1;
+                      return (
+                        <React.Fragment key={page}>
+                          {showEllipsisBefore && (
+                            <span className="px-2 text-neutral-500">...</span>
+                          )}
+                          <Link
+                            href={`/blogs?page=${page}${topic ? `&topic=${topic}` : ''}${type ? `&type=${type}` : ''}${search ? `&search=${search}` : ''}`}
+                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-colors ${
+                              page === currentPage
+                                ? 'bg-primary-500 text-white'
+                                : 'text-neutral-400 hover:text-neutral-200 hover:bg-dark-200'
+                            }`}
+                          >
+                            {page}
+                          </Link>
+                        </React.Fragment>
+                      );
+                    })}
                 </div>
-                <Button variant="ghost" className="px-4">
-                  Next →
-                </Button>
+                
+                {/* Next Button */}
+                {currentPage < pagination.pages ? (
+                  <Link 
+                    href={`/blogs?page=${currentPage + 1}${topic ? `&topic=${topic}` : ''}${type ? `&type=${type}` : ''}${search ? `&search=${search}` : ''}`}
+                    className="px-4 py-2 rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-dark-200 transition-colors"
+                  >
+                    Next →
+                  </Link>
+                ) : (
+                  <span className="px-4 py-2 rounded-lg text-neutral-600 cursor-not-allowed">
+                    Next →
+                  </span>
+                )}
               </nav>
+            </div>
+          )}
+          
+          {/* Results info */}
+          {blogs.length > 0 && (
+            <div className="mt-6 text-center text-neutral-500 text-sm">
+              Showing {blogs.length} of {pagination.total} articles (Page {currentPage} of {pagination.pages})
             </div>
           )}
         </div>

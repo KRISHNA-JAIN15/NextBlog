@@ -5,7 +5,8 @@ import { withAuth } from "@/middleware/auth";
 // Add a comment to a blog post - only accessible to logged-in users
 async function addComment(req, { params }) {
   try {
-    const postId = parseInt(params.id);
+    const resolvedParams = await params;
+    const postId = parseInt(resolvedParams.id);
     const userId = req.user.id;
     const { content } = await req.json();
 
@@ -36,11 +37,21 @@ async function addComment(req, { params }) {
       );
     }
 
-    // Create the comment
+    // Create the comment with author
     const comment = await prisma.comment.create({
       data: {
         content,
         postId,
+        authorId: userId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -63,7 +74,8 @@ async function addComment(req, { params }) {
 // Get comments for a blog post
 export async function GET(req, { params }) {
   try {
-    const postId = parseInt(params.id);
+    const resolvedParams = await params;
+    const postId = parseInt(resolvedParams.id);
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
@@ -94,9 +106,18 @@ export async function GET(req, { params }) {
       where: { postId },
     });
 
-    // Get comments
+    // Get comments with author info
     const comments = await prisma.comment.findMany({
       where: { postId },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: "desc",
       },

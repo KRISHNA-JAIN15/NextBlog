@@ -9,28 +9,66 @@ generator client {
 }
 
 model User {
-    id                Int        @id @default(autoincrement())
-    email             String     @unique
+    id                Int            @id @default(autoincrement())
+    email             String         @unique
     name              String?
     password          String
     Posts             BlogPost[]
-    verified          Boolean    @default(false)
+    Comments          Comment[]
+    BlogViews         BlogView[]
+    Subscriptions     Subscription[]
+    verified          Boolean        @default(false)
     verificationToken String?
-    credits           Int        @default(0)
-    createdAt         DateTime   @default(now())
+    credits           Int            @default(0)
+    createdAt         DateTime       @default(now())
 }
 
 model BlogPost {
-    id        Int       @id @default(autoincrement())
-    title     String
-    content   String?
-    topic     Topic
-    published Boolean   @default(false)
-    type      PostType  @default(FREE)
-    authorId  Int
-    author    User      @relation(fields: [authorId], references: [id])
-    createdAt DateTime  @default(now())
-    Comment   Comment[]
+    id         Int        @id @default(autoincrement())
+    title      String
+    content    String?
+    excerpt    String?
+    coverImage String?
+    topic      Topic
+    published  Boolean    @default(false)
+    type       PostType   @default(FREE)
+    authorId   Int
+    author     User       @relation(fields: [authorId], references: [id])
+    createdAt  DateTime   @default(now())
+    Comment    Comment[]
+    BlogViews  BlogView[]
+    viewCount  Int        @default(0)
+}
+
+model BlogView {
+    id        Int      @id @default(autoincrement())
+    postId    Int
+    post      BlogPost @relation(fields: [postId], references: [id])
+    userId    Int
+    user      User     @relation(fields: [userId], references: [id])
+    viewedAt  DateTime @default(now())
+
+    @@unique([postId, userId])
+}
+
+model Subscription {
+    id              Int      @id @default(autoincrement())
+    userId          Int
+    user            User     @relation(fields: [userId], references: [id])
+    razorpayOrderId String?
+    razorpayPaymentId String?
+    amount          Int      @default(100)
+    status          SubStatus @default(PENDING)
+    startDate       DateTime?
+    endDate         DateTime?
+    createdAt       DateTime @default(now())
+}
+
+enum SubStatus {
+    PENDING
+    ACTIVE
+    EXPIRED
+    CANCELLED
 }
 
 model Comment {
@@ -38,6 +76,8 @@ model Comment {
     content   String
     postId    Int
     post      BlogPost @relation(fields: [postId], references: [id])
+    authorId  Int
+    author    User     @relation(fields: [authorId], references: [id])
     createdAt DateTime @default(now())
 }
 

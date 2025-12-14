@@ -9,11 +9,12 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   fullWidth?: boolean;
-  options: Option[];
+  options?: Option[];
+  children?: React.ReactNode;
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, fullWidth = true, options, className = '', ...props }, ref) => {
+  ({ label, error, fullWidth = true, options, children, className = '', ...props }, ref) => {
     const selectId = `select-${Math.random().toString(36).substring(2, 9)}`;
     
     return (
@@ -41,11 +42,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             `}
             {...props}
           >
-            {options.map((option) => (
+            {options ? options.map((option) => (
               <option key={option.value} value={option.value} className="bg-dark-100 text-white">
                 {option.label}
               </option>
-            ))}
+            )) : children}
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 group-hover:text-gray-300 transition-colors">
             <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

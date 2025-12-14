@@ -4,7 +4,8 @@ import { withAuth } from "@/middleware/auth";
 
 export async function GET(req, { params }) {
   try {
-    const id = parseInt(params.id);
+    const resolvedParams = await params;
+    const id = parseInt(resolvedParams.id);
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -68,9 +69,11 @@ export async function GET(req, { params }) {
 // Update a blog post - only accessible to the author
 async function updateBlogPost(req, { params }) {
   try {
-    const id = parseInt(params.id);
+    const resolvedParams = await params;
+    const id = parseInt(resolvedParams.id);
     const userId = req.user.id;
-    const { title, content, topic, type, published } = await req.json();
+    const { title, content, excerpt, coverImage, topic, type, published } =
+      await req.json();
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -105,6 +108,8 @@ async function updateBlogPost(req, { params }) {
 
     if (title !== undefined) updateData.title = title;
     if (content !== undefined) updateData.content = content;
+    if (excerpt !== undefined) updateData.excerpt = excerpt;
+    if (coverImage !== undefined) updateData.coverImage = coverImage;
     if (topic !== undefined) {
       // Validate topic is one of the enum values
       const validTopics = [
@@ -157,7 +162,8 @@ async function updateBlogPost(req, { params }) {
 // Delete a blog post - only accessible to the author
 async function deleteBlogPost(req, { params }) {
   try {
-    const id = parseInt(params.id);
+    const resolvedParams = await params;
+    const id = parseInt(resolvedParams.id);
     const userId = req.user.id;
 
     if (isNaN(id)) {

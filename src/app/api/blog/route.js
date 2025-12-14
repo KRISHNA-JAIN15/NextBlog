@@ -8,6 +8,7 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const topic = searchParams.get("topic");
     const type = searchParams.get("type");
+    const search = searchParams.get("search");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
@@ -25,6 +26,15 @@ export async function GET(req) {
     // Filter by type if provided
     if (type) {
       where.type = type;
+    }
+
+    // Search functionality
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { excerpt: { contains: search, mode: "insensitive" } },
+        { content: { contains: search, mode: "insensitive" } },
+      ];
     }
 
     // Get total count for pagination
@@ -86,31 +96,18 @@ async function handler(req) {
     const {
       title,
       content,
-      topic,
+      excerpt,
+      coverImage,
+      tags = [],
       type = "FREE",
-      published = false,
+      published = true,
     } = await req.json();
     const userId = req.user.id;
 
     // Validate required fields
-    if (!title || !content || !topic) {
+    if (!title || !content) {
       return NextResponse.json(
-        { error: "Title, content, and topic are required" },
-        { status: 400 }
-      );
-    }
-
-    // Validate topic is one of the enum values
-    const validTopics = [
-      "TECHNOLOGY",
-      "HEALTH",
-      "LIFESTYLE",
-      "EDUCATION",
-      "ENTERTAINMENT",
-    ];
-    if (!validTopics.includes(topic)) {
-      return NextResponse.json(
-        { error: "Invalid topic", validTopics },
+        { error: "Title and content are required" },
         { status: 400 }
       );
     }
@@ -129,7 +126,9 @@ async function handler(req) {
       data: {
         title,
         content,
-        topic,
+        excerpt: excerpt || content.substring(0, 200),
+        coverImage: coverImage || null,
+        topic: "TECHNOLOGY", // Default topic
         type,
         published,
         authorId: userId,
@@ -139,7 +138,7 @@ async function handler(req) {
     return NextResponse.json(
       {
         success: true,
-        blogPost,
+        ...blogPost,
       },
       { status: 201 }
     );
