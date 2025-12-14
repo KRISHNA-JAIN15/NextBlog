@@ -138,56 +138,77 @@ export default async function BlogsPage({ searchParams }: { searchParams: Promis
             )}
             
             {/* Filters */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
               {/* Topic Filter */}
-              <div className="flex flex-wrap gap-2">
-                <Link 
-                  href={`/blogs${search ? `?search=${search}` : ''}${type ? `${search ? '&' : '?'}type=${type}` : ''}`}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    !topic ? 'bg-primary-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
-                  }`}
-                >
-                  All Topics
-                </Link>
-                {Object.entries(topicLabels).map(([value, label]) => (
-                  <Link
-                    key={value}
-                    href={`/blogs?topic=${value}${type ? `&type=${type}` : ''}${search ? `&search=${search}` : ''}`}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                      topic === value ? 'bg-primary-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
+              <div>
+                <p className="text-sm text-neutral-500 mb-3 font-medium">Filter by Topic</p>
+                <div className="flex flex-wrap gap-3">
+                  <Link 
+                    href={`/blogs${search ? `?search=${search}` : ''}${type ? `${search ? '&' : '?'}type=${type}` : ''}`}
+                    className={`relative group px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                      !topic 
+                        ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.5)]' 
+                        : 'bg-dark-100 text-neutral-400 border border-primary-500/20 hover:border-primary-500/60 hover:text-neutral-200 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]'
                     }`}
                   >
-                    {label}
+                    {!topic && <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 opacity-50 blur-md -z-10"></span>}
+                    All Topics
                   </Link>
-                ))}
+                  {Object.entries(topicLabels).map(([value, label]) => (
+                    <Link
+                      key={value}
+                      href={`/blogs?topic=${value}${type ? `&type=${type}` : ''}${search ? `&search=${search}` : ''}`}
+                      className={`relative group px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                        topic === value 
+                          ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.5)]' 
+                          : 'bg-dark-100 text-neutral-400 border border-primary-500/20 hover:border-primary-500/60 hover:text-neutral-200 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]'
+                      }`}
+                    >
+                      {topic === value && <span className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 opacity-50 blur-md -z-10"></span>}
+                      {label}
+                    </Link>
+                  ))}
+                </div>
               </div>
               
               {/* Type Filter */}
-              <div className="flex gap-2">
-                <Link 
-                  href={`/blogs${topic ? `?topic=${topic}` : ''}${search ? `${topic ? '&' : '?'}search=${search}` : ''}`}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    !type ? 'bg-accent-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
-                  }`}
-                >
-                  All
-                </Link>
-                <Link
-                  href={`/blogs?${topic ? `topic=${topic}&` : ''}type=FREE${search ? `&search=${search}` : ''}`}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    type === 'FREE' ? 'bg-accent-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
-                  }`}
-                >
-                  Free
-                </Link>
-                <Link
-                  href={`/blogs?${topic ? `topic=${topic}&` : ''}type=PAID${search ? `&search=${search}` : ''}`}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    type === 'PAID' ? 'bg-accent-500 text-white' : 'bg-dark-100 text-neutral-400 hover:text-neutral-200'
-                  }`}
-                >
-                  Premium
-                </Link>
+              <div>
+                <p className="text-sm text-neutral-500 mb-3 font-medium">Filter by Access</p>
+                <div className="flex gap-3">
+                  <Link 
+                    href={`/blogs${topic ? `?topic=${topic}` : ''}${search ? `${topic ? '&' : '?'}search=${search}` : ''}`}
+                    className={`relative px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                      !type 
+                        ? 'bg-gradient-to-r from-accent-500 to-green-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)]' 
+                        : 'bg-dark-100 text-neutral-400 border border-accent-500/20 hover:border-accent-500/60 hover:text-neutral-200 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+                    }`}
+                  >
+                    {!type && <span className="absolute inset-0 rounded-full bg-gradient-to-r from-accent-500 to-green-500 opacity-50 blur-md -z-10"></span>}
+                    All
+                  </Link>
+                  <Link
+                    href={`/blogs?${topic ? `topic=${topic}&` : ''}type=FREE${search ? `&search=${search}` : ''}`}
+                    className={`relative px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                      type === 'FREE' 
+                        ? 'bg-gradient-to-r from-accent-500 to-green-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)]' 
+                        : 'bg-dark-100 text-neutral-400 border border-accent-500/20 hover:border-accent-500/60 hover:text-neutral-200 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+                    }`}
+                  >
+                    {type === 'FREE' && <span className="absolute inset-0 rounded-full bg-gradient-to-r from-accent-500 to-green-500 opacity-50 blur-md -z-10"></span>}
+                    🆓 Free
+                  </Link>
+                  <Link
+                    href={`/blogs?${topic ? `topic=${topic}&` : ''}type=PAID${search ? `&search=${search}` : ''}`}
+                    className={`relative px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                      type === 'PAID' 
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-[0_0_20px_rgba(245,158,11,0.5)]' 
+                        : 'bg-dark-100 text-neutral-400 border border-yellow-500/20 hover:border-yellow-500/60 hover:text-neutral-200 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+                    }`}
+                  >
+                    {type === 'PAID' && <span className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 opacity-50 blur-md -z-10"></span>}
+                    👑 Premium
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

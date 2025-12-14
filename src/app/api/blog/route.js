@@ -100,6 +100,7 @@ async function handler(req) {
       coverImage,
       tags = [],
       type = "FREE",
+      topic = "TECHNOLOGY",
       published = true,
     } = await req.json();
     const userId = req.user.id;
@@ -121,6 +122,21 @@ async function handler(req) {
       );
     }
 
+    // Validate topic is one of the enum values
+    const validTopics = [
+      "TECHNOLOGY",
+      "HEALTH",
+      "LIFESTYLE",
+      "EDUCATION",
+      "ENTERTAINMENT",
+    ];
+    if (!validTopics.includes(topic)) {
+      return NextResponse.json(
+        { error: "Invalid topic", validTopics },
+        { status: 400 }
+      );
+    }
+
     // Create new blog post
     const blogPost = await prisma.blogPost.create({
       data: {
@@ -128,7 +144,7 @@ async function handler(req) {
         content,
         excerpt: excerpt || content.substring(0, 200),
         coverImage: coverImage || null,
-        topic: "TECHNOLOGY", // Default topic
+        topic,
         type,
         published,
         authorId: userId,

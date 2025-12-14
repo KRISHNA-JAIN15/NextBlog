@@ -24,6 +24,7 @@ function NewPostForm() {
     excerpt: '',
     content: '',
     type: 'FREE',
+    topic: 'TECHNOLOGY',
     coverImage: '',
     tags: '',
   });
@@ -46,6 +47,7 @@ function NewPostForm() {
           excerpt: data.excerpt || '',
           content: data.content || '',
           type: data.type || 'FREE',
+          topic: data.topic || 'TECHNOLOGY',
           coverImage: data.coverImage || '',
           tags: Array.isArray(data.tags) ? data.tags.join(', ') : '',
         });
@@ -299,18 +301,39 @@ function NewPostForm() {
 
               <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-2xl border border-neutral-700 p-6 shadow-xl">
                 <label className="block text-sm font-bold text-white mb-3">
-                  Tags
+                  Topic *
                 </label>
-                <Input
-                  type="text"
-                  placeholder="React, Next.js, JavaScript (comma separated)"
-                  value={formData.tags}
-                  onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                />
+                <Select
+                  value={formData.topic}
+                  onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
+                  required
+                >
+                  <option value="TECHNOLOGY">Technology</option>
+                  <option value="HEALTH">Health</option>
+                  <option value="LIFESTYLE">Lifestyle</option>
+                  <option value="EDUCATION">Education</option>
+                  <option value="ENTERTAINMENT">Entertainment</option>
+                </Select>
                 <p className="mt-2 text-sm text-neutral-500">
-                  Separate tags with commas
+                  Choose the main topic for your post
                 </p>
               </div>
+            </div>
+
+            {/* Tags */}
+            <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 rounded-2xl border border-neutral-700 p-6 shadow-xl">
+              <label className="block text-sm font-bold text-white mb-3">
+                Tags
+              </label>
+              <Input
+                type="text"
+                placeholder="React, Next.js, JavaScript (comma separated)"
+                value={formData.tags}
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+              />
+              <p className="mt-2 text-sm text-neutral-500">
+                Separate tags with commas
+              </p>
             </div>
 
             {/* Rich Text Editor */}
