@@ -9,12 +9,23 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
+interface SubscriptionData {
+  hasActiveSubscription: boolean;
+  subscription: {
+    startDate: string;
+    endDate: string;
+    daysRemaining: number;
+  } | null;
+  credits: number;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('published');
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -25,6 +36,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchBlogs();
+    fetchSubscriptionStatus();
   }, []);
 
   const fetchBlogs = async () => {
@@ -38,6 +50,18 @@ export default function DashboardPage() {
       console.error('Failed to fetch blogs:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      const response = await fetch('/api/subscription/status');
+      if (response.ok) {
+        const data = await response.json();
+        setSubscriptionData(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch subscription status:', error);
     }
   };
 
@@ -116,7 +140,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <div className="glass rounded-xl p-4 border border-white/5">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center">
@@ -169,6 +193,47 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+          <div className="glass rounded-xl p-4 border border-accent-500/30">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-accent-500/20 flex items-center justify-center">
+                <svg className="w-5 h-5 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-accent-400">{subscriptionData?.credits || 0}</p>
+                <p className="text-sm text-gray-400">Credits</p>
+              </div>
+            </div>
+          </div>
+          <Link href="/subscription" className="glass rounded-xl p-4 border border-secondary-500/30 hover:border-secondary-500/50 transition-colors cursor-pointer">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-secondary-500/20 flex items-center justify-center">
+                {subscriptionData?.hasActiveSubscription ? (
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-secondary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                )}
+              </div>
+              <div>
+                {subscriptionData?.hasActiveSubscription ? (
+                  <>
+                    <p className="text-sm font-bold text-emerald-400">Active</p>
+                    <p className="text-xs text-gray-400">{subscriptionData.subscription?.daysRemaining} days left</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-bold text-secondary-400">Subscribe</p>
+                    <p className="text-xs text-gray-400">₹100/month</p>
+                  </>
+                )}
+              </div>
+            </div>
+          </Link>
         </div>
         
         {/* Content */}

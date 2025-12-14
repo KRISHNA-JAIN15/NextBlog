@@ -1,29 +1,31 @@
-import { NextResponse } from 'next/server';
-import crypto from 'crypto';
-import prisma from '@/lib/prisma';
-import { withAuth } from '@/middleware/auth';
+import { NextResponse } from "next/server";
+import crypto from "crypto";
+import prisma from "@/lib/prisma";
+import { withAuth } from "@/middleware/auth";
 
-async function handler(request, { user }) {
+async function handler(request) {
+  const user = request.user;
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = await request.json();
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      await request.json();
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json(
-        { success: false, message: 'Missing payment details' },
+        { success: false, message: "Missing payment details" },
         { status: 400 }
       );
     }
 
     // Verify signature
-    const body = razorpay_order_id + '|' + razorpay_payment_id;
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(body.toString())
-      .digest('hex');
+      .digest("hex");
 
     if (expectedSignature !== razorpay_signature) {
       return NextResponse.json(
-        { success: false, message: 'Invalid payment signature' },
+        { success: false, message: "Invalid payment signature" },
         { status: 400 }
       );
     }
@@ -38,7 +40,7 @@ async function handler(request, { user }) {
 
     if (!subscription) {
       return NextResponse.json(
-        { success: false, message: 'Subscription not found' },
+        { success: false, message: "Subscription not found" },
         { status: 404 }
       );
     }
@@ -53,7 +55,7 @@ async function handler(request, { user }) {
       where: { id: subscription.id },
       data: {
         razorpayPaymentId: razorpay_payment_id,
-        status: 'ACTIVE',
+        status: "ACTIVE",
         startDate: startDate,
         endDate: endDate,
       },
@@ -61,16 +63,16 @@ async function handler(request, { user }) {
 
     return NextResponse.json({
       success: true,
-      message: 'Subscription activated successfully',
+      message: "Subscription activated successfully",
       data: {
         startDate,
         endDate,
       },
     });
   } catch (error) {
-    console.error('Payment verification error:', error);
+    console.error("Payment verification error:", error);
     return NextResponse.json(
-      { success: false, message: 'Failed to verify payment' },
+      { success: false, message: "Failed to verify payment" },
       { status: 500 }
     );
   }

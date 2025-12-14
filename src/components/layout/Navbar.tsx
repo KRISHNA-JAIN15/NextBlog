@@ -97,6 +97,19 @@ export const Navbar: React.FC = () => {
                   {pathname?.startsWith('/dashboard') && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-400 to-accent-400 animate-pulse"></span>}
                 </Link>
               )}
+              <Link
+                href="/subscription"
+                className={`relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 group ${pathname?.startsWith('/subscription')
+                    ? 'bg-gradient-to-r from-secondary-500/30 via-accent-500/20 to-secondary-500/30 text-white shadow-lg shadow-secondary-500/30 border border-secondary-500/30'
+                    : 'text-neutral-200 hover:text-white hover:bg-gradient-to-r hover:from-secondary-800/50 hover:to-secondary-700/50 border border-transparent hover:border-secondary-600'
+                  }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                </svg>
+                Premium
+                {pathname?.startsWith('/subscription') && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-secondary-400 to-accent-400 animate-pulse"></span>}
+              </Link>
             </div>
           </div>
 
@@ -237,6 +250,18 @@ export const Navbar: React.FC = () => {
               Dashboard
             </Link>
           )}
+          <Link
+            href="/subscription"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-300 ${pathname?.startsWith('/subscription')
+                ? 'bg-gradient-to-r from-secondary-500/30 to-accent-500/20 text-white shadow-lg shadow-secondary-500/30 border border-secondary-500/30'
+                : 'text-neutral-200 hover:bg-secondary-800/50 hover:text-white border border-transparent'
+              }`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+            Premium
+          </Link>
         </div>
 
         <div className="pt-4 pb-3 border-t border-primary-500/20 px-4">

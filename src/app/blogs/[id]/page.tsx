@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { CommentSection } from '@/components/blog/CommentSection';
 import { ShareButton } from '@/components/blog/ShareButton';
+import { PremiumGate } from '@/components/blog/PremiumGate';
 
 interface Params {
   id: string;
@@ -31,6 +32,7 @@ interface BlogPost {
   type: 'FREE' | 'PAID';
   authorId: number;
   createdAt: string;
+  viewCount: number;
   author: {
     id: number;
     name: string | null;
@@ -179,7 +181,14 @@ export default async function BlogPage({ params }: { params: Promise<Params> }) 
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <span className="text-sm text-neutral-400 flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    {blog.viewCount} views
+                  </span>
                   <span className="text-sm text-neutral-400 flex items-center gap-2">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -220,25 +229,26 @@ export default async function BlogPage({ params }: { params: Promise<Params> }) 
           </Container>
         )}
         
-        {/* Content */}
+        {/* Content - Protected by PremiumGate for PAID blogs */}
         <Container className="py-12">
           <div className="max-w-4xl mx-auto">
-            {/* Article Content */}
-            <div className="blog-content text-neutral-300">
-              {renderContent(blog.content)}
-            </div>
-            
-            {/* Author Card */}
-            <div className="mt-16 p-8 rounded-2xl bg-gradient-to-br from-dark-100 to-dark-200 border border-primary-500/20">
-              <h2 className="text-lg font-bold text-neutral-300 mb-6 flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                About the Author
-              </h2>
-              <div className="flex flex-col sm:flex-row items-start gap-6">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
-                  {authorInitial}
+            <PremiumGate blogId={blog.id} isPremium={blog.type === 'PAID'}>
+              {/* Article Content */}
+              <div className="blog-content text-neutral-300">
+                {renderContent(blog.content)}
+              </div>
+              
+              {/* Author Card */}
+              <div className="mt-16 p-8 rounded-2xl bg-gradient-to-br from-dark-100 to-dark-200 border border-primary-500/20">
+                <h2 className="text-lg font-bold text-neutral-300 mb-6 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  About the Author
+                </h2>
+                <div className="flex flex-col sm:flex-row items-start gap-6">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
+                    {authorInitial}
                 </div>
                 <div>
                   <h3 className="font-bold text-xl text-neutral-100 mb-2">{blog.author.name || 'Anonymous'}</h3>
@@ -258,6 +268,7 @@ export default async function BlogPage({ params }: { params: Promise<Params> }) 
             
             {/* Comments Section */}
             <CommentSection blogId={blog.id} initialCommentCount={blog.commentCount} />
+            </PremiumGate>
           </div>
         </Container>
       </article>

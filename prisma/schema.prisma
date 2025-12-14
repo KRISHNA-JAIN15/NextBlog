@@ -41,27 +41,27 @@ model BlogPost {
 }
 
 model BlogView {
-    id        Int      @id @default(autoincrement())
-    postId    Int
-    post      BlogPost @relation(fields: [postId], references: [id])
-    userId    Int
-    user      User     @relation(fields: [userId], references: [id])
-    viewedAt  DateTime @default(now())
+    id       Int      @id @default(autoincrement())
+    postId   Int
+    post     BlogPost @relation(fields: [postId], references: [id])
+    userId   Int
+    user     User     @relation(fields: [userId], references: [id])
+    viewedAt DateTime @default(now())
 
     @@unique([postId, userId])
 }
 
 model Subscription {
-    id              Int      @id @default(autoincrement())
-    userId          Int
-    user            User     @relation(fields: [userId], references: [id])
-    razorpayOrderId String?
+    id                Int       @id @default(autoincrement())
+    userId            Int
+    user              User      @relation(fields: [userId], references: [id])
+    razorpayOrderId   String?
     razorpayPaymentId String?
-    amount          Int      @default(100)
-    status          SubStatus @default(PENDING)
-    startDate       DateTime?
-    endDate         DateTime?
-    createdAt       DateTime @default(now())
+    amount            Int       @default(100)
+    status            SubStatus @default(PENDING)
+    startDate         DateTime?
+    endDate           DateTime?
+    createdAt         DateTime  @default(now())
 }
 
 enum SubStatus {

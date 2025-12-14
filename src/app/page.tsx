@@ -6,38 +6,41 @@ import { Button } from '@/components/ui/Button';
 import { LottieAnimation } from '@/components/ui/LottieAnimation';
 import animationData from '@/../public/lottie.json';
 
-// Mock function to get featured blog posts
-async function getFeaturedBlogs() {
-  return [
-    {
-      id: '1',
-      title: 'Getting Started with Next.js',
-      excerpt: 'Learn the basics of Next.js and how to build your first app with the latest App Router features.',
-      author: 'John Doe',
-      createdAt: new Date().toISOString(),
-      imageUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97',
-      type: 'FREE'
-    },
-    {
-      id: '2',
-      title: 'The Power of Server Components',
-      excerpt: 'Explore how React Server Components are changing the way we build web applications.',
-      author: 'Jane Smith',
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      imageUrl: 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2',
-      type: 'PAID'
-    },
-    {
-      id: '3',
-      title: 'Styling Your Next.js Application',
-      excerpt: 'Learn different approaches to styling your Next.js app, from CSS Modules to Tailwind CSS.',
-      author: 'Alex Johnson',
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      imageUrl: 'https://images.unsplash.com/photo-1593720213428-28a5b9e94613',
-      type: 'FREE'
-    }
-  ];
+interface FeaturedBlog {
+  id: number;
+  title: string;
+  excerpt: string | null;
+  coverImage: string | null;
+  topic: string;
+  type: 'FREE' | 'PAID';
+  author: string;
+  createdAt: string;
+  viewCount: number;
 }
+
+// Function to get featured blog posts (most viewed)
+async function getFeaturedBlogs(): Promise<FeaturedBlog[]> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  
+  try {
+    const res = await fetch(`${baseUrl}/api/blog/featured?limit=3`, {
+      cache: 'no-store',
+    });
+    
+    if (!res.ok) {
+      return [];
+    }
+    
+    const data = await res.json();
+    return data.success ? data.data : [];
+  } catch (error) {
+    console.error('Failed to fetch featured blogs:', error);
+    return [];
+  }
+}
+
+// Fallback default image for blogs without cover
+const defaultCoverImage = 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97';
 
 export default async function Home() {
   const featuredBlogs = await getFeaturedBlogs();
@@ -132,41 +135,59 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredBlogs.map((blog, index) => (
-              <Link href={`/blogs/${blog.id}`} key={blog.id} className="block group">
-                <div 
-                  className={`bg-gradient-to-br from-dark-100 to-dark-200 rounded-2xl border border-dark-100 overflow-hidden transition-all duration-500 hover:border-primary-500/50 card-glow h-full flex flex-col ${
-                    index === 1 ? 'animation-delay-500' : index === 2 ? 'animation-delay-1000' : ''
-                  }`}
-                >
-                  <div className="relative h-52 overflow-hidden">
-                    <Image
-                      src={blog.imageUrl}
-                      alt={blog.title}
-                      width={500}
-                      height={300}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark-100 via-transparent to-transparent opacity-60"></div>
-                    {blog.type === 'PAID' && (
-                      <div className="absolute top-3 right-3 premium-badge text-white text-xs font-bold px-3 py-1.5 rounded-full">
-                        PREMIUM
+            {featuredBlogs.length > 0 ? (
+              featuredBlogs.map((blog, index) => (
+                <Link href={`/blogs/${blog.id}`} key={blog.id} className="block group">
+                  <div 
+                    className={`bg-gradient-to-br from-dark-100 to-dark-200 rounded-2xl border border-dark-100 overflow-hidden transition-all duration-500 hover:border-primary-500/50 card-glow h-full flex flex-col ${
+                      index === 1 ? 'animation-delay-500' : index === 2 ? 'animation-delay-1000' : ''
+                    }`}
+                  >
+                    <div className="relative h-52 overflow-hidden">
+                      <Image
+                        src={blog.coverImage || defaultCoverImage}
+                        alt={blog.title}
+                        width={500}
+                        height={300}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-dark-100 via-transparent to-transparent opacity-60"></div>
+                      {blog.type === 'PAID' && (
+                        <div className="absolute top-3 right-3 premium-badge text-white text-xs font-bold px-3 py-1.5 rounded-full">
+                          PREMIUM
+                        </div>
+                      )}
+                      {/* View count badge */}
+                      <div className="absolute top-3 left-3 bg-dark-100/80 backdrop-blur-sm text-neutral-300 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        {blog.viewCount} views
                       </div>
-                    )}
-                  </div>
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold text-neutral-100 mb-3 group-hover:text-primary-400 transition-colors line-clamp-2">
-                      {blog.title}
-                    </h3>
-                    <p className="text-neutral-400 mb-4 flex-grow line-clamp-2">{blog.excerpt}</p>
-                    <div className="flex justify-between items-center text-sm pt-4 border-t border-dark-100">
-                      <span className="text-neutral-500">{blog.author}</span>
-                      <span className="text-neutral-600">{new Date(blog.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="text-xl font-bold text-neutral-100 mb-3 group-hover:text-primary-400 transition-colors line-clamp-2">
+                        {blog.title}
+                      </h3>
+                      <p className="text-neutral-400 mb-4 flex-grow line-clamp-2">{blog.excerpt || 'No excerpt available'}</p>
+                      <div className="flex justify-between items-center text-sm pt-4 border-t border-dark-100">
+                        <span className="text-neutral-500">{blog.author}</span>
+                        <span className="text-neutral-600">{new Date(blog.createdAt).toLocaleDateString()}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            ) : (
+              // Fallback when no featured blogs
+              <div className="col-span-3 text-center py-12">
+                <p className="text-neutral-400 mb-4">No featured blogs yet. Be the first to write!</p>
+                <Button href="/dashboard/new-post" variant="outline">
+                  Create a Blog Post
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="mt-12 text-center">

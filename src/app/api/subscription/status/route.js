@@ -1,20 +1,21 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { withAuth } from '@/middleware/auth';
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { withAuth } from "@/middleware/auth";
 
-async function handler(request, { user }) {
+async function handler(request) {
+  const user = request.user;
   try {
     // Get active subscription
     const subscription = await prisma.subscription.findFirst({
       where: {
         userId: user.id,
-        status: 'ACTIVE',
+        status: "ACTIVE",
         endDate: {
           gt: new Date(),
         },
       },
       orderBy: {
-        endDate: 'desc',
+        endDate: "desc",
       },
     });
 
@@ -33,7 +34,8 @@ async function handler(request, { user }) {
               startDate: subscription.startDate,
               endDate: subscription.endDate,
               daysRemaining: Math.ceil(
-                (new Date(subscription.endDate) - new Date()) / (1000 * 60 * 60 * 24)
+                (new Date(subscription.endDate) - new Date()) /
+                  (1000 * 60 * 60 * 24)
               ),
             }
           : null,
@@ -41,9 +43,9 @@ async function handler(request, { user }) {
       },
     });
   } catch (error) {
-    console.error('Subscription status error:', error);
+    console.error("Subscription status error:", error);
     return NextResponse.json(
-      { success: false, message: 'Failed to get subscription status' },
+      { success: false, message: "Failed to get subscription status" },
       { status: 500 }
     );
   }
