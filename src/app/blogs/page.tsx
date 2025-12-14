@@ -100,114 +100,156 @@ interface SearchParams {
   q?: string;
 }
 
-export default async function BlogsPage({ searchParams }: { searchParams: SearchParams }) {
-  const search = searchParams.q || '';
+export default async function BlogsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const resolvedParams = await searchParams;
+  const search = resolvedParams.q || '';
   const blogs = await getBlogs(search);
   
   return (
     <Page>
       <Container>
-        <div className="py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-neutral-900 mb-4">Explore Blogs</h1>
-            <p className="text-lg text-neutral-700 mb-6">
+        <div className="py-12">
+          {/* Header */}
+          <div className="mb-12">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-sm font-medium mb-4">
+              Explore Content
+            </span>
+            <h1 className="text-4xl font-bold text-neutral-100 mb-4">Explore Blogs</h1>
+            <p className="text-lg text-neutral-400 mb-8 max-w-2xl">
               Discover insights, tutorials, and stories from our community of writers.
             </p>
-            <form className="flex flex-col sm:flex-row gap-4">
-              <Input
-                type="search"
-                placeholder="Search articles..."
-                name="q"
-                defaultValue={search}
-                className="flex-grow"
-              />
-              <Button type="submit">
+            
+            {/* Search Form */}
+            <form className="flex flex-col sm:flex-row gap-4 max-w-2xl">
+              <div className="relative flex-grow">
+                <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-500">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <Input
+                  type="search"
+                  placeholder="Search articles, topics, authors..."
+                  name="q"
+                  defaultValue={search}
+                  className="pl-12"
+                />
+              </div>
+              <Button type="submit" size="lg">
                 Search
               </Button>
             </form>
           </div>
           
+          {/* Empty State */}
           {blogs.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-lg text-neutral-700">No articles found matching your search.</p>
-              <Button href="/blogs" variant="outline" className="mt-4">
+            <div className="text-center py-20 rounded-2xl bg-dark-100 border border-dark-100">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary-500/10 flex items-center justify-center">
+                <svg className="w-8 h-8 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-lg text-neutral-400 mb-4">No articles found matching your search.</p>
+              <Button href="/blogs" variant="outline">
                 Clear Search
               </Button>
             </div>
           )}
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {blogs.map(blog => (
-              <div key={blog.id} className="bg-white rounded-lg shadow-card overflow-hidden flex flex-col">
-                <div className="relative h-48">
+          {/* Blog Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {blogs.map((blog, index) => (
+              <div 
+                key={blog.id} 
+                className={`group bg-gradient-to-br from-dark-100 to-dark-200 rounded-2xl border border-dark-100 overflow-hidden flex flex-col transition-all duration-500 hover:border-primary-500/30 card-glow animate-fade-in ${
+                  index % 2 === 1 ? 'animation-delay-500' : ''
+                }`}
+              >
+                {/* Image */}
+                <div className="relative h-56 overflow-hidden">
                   <Image
                     src={blog.imageUrl}
                     alt={blog.title}
                     width={600}
                     height={400}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-dark-100 via-transparent to-transparent opacity-60"></div>
                   {blog.type === 'PAID' && (
-                    <div className="absolute top-2 right-2 bg-secondary-500 text-white text-xs px-2 py-1 rounded">
+                    <div className="absolute top-4 right-4 premium-badge text-white text-xs font-bold px-3 py-1.5 rounded-full">
                       PREMIUM
                     </div>
                   )}
-                </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex gap-2 mb-3 flex-wrap">
-                    {blog.tags.map(tag => (
+                  
+                  {/* Tags overlay */}
+                  <div className="absolute bottom-4 left-4 flex gap-2 flex-wrap">
+                    {blog.tags.slice(0, 3).map(tag => (
                       <span 
                         key={tag} 
-                        className="text-xs bg-primary-50 text-primary-700 px-2 py-1 rounded"
+                        className="text-xs bg-dark-100/80 backdrop-blur-sm text-neutral-300 px-3 py-1.5 rounded-full border border-primary-500/20"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
-                  <h2 className="text-xl font-semibold text-neutral-900 mb-2">
-                    <Link href={`/blogs/${blog.id}`} className="hover:text-primary-600">
+                </div>
+                
+                {/* Content */}
+                <div className="p-6 flex flex-col flex-grow">
+                  <h2 className="text-xl font-bold text-neutral-100 mb-3 group-hover:text-primary-400 transition-colors">
+                    <Link href={`/blogs/${blog.id}`}>
                       {blog.title}
                     </Link>
                   </h2>
-                  <p className="text-neutral-600 mb-4 flex-grow">{blog.excerpt}</p>
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center">
-                      <Image
-                        src={blog.author.image}
-                        alt={blog.author.name}
-                        width={32}
-                        height={32}
-                        className="rounded-full mr-2"
-                      />
-                      <span className="text-sm text-neutral-700">{blog.author.name}</span>
+                  <p className="text-neutral-400 mb-6 flex-grow line-clamp-2">{blog.excerpt}</p>
+                  
+                  {/* Author & Date */}
+                  <div className="flex items-center justify-between pt-4 border-t border-dark-100">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <Image
+                          src={blog.author.image}
+                          alt={blog.author.name}
+                          width={40}
+                          height={40}
+                          className="rounded-full border-2 border-primary-500/30"
+                        />
+                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-accent-400 rounded-full border-2 border-dark-100"></div>
+                      </div>
+                      <span className="text-sm font-medium text-neutral-300">{blog.author.name}</span>
                     </div>
-                    <span className="text-xs text-neutral-500">
-                      {new Date(blog.createdAt).toLocaleDateString()}
+                    <span className="text-sm text-neutral-500">
+                      {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </span>
                   </div>
                 </div>
+                
+                {/* Footer */}
                 <div className="px-6 pb-6">
-                  <Button href={`/blogs/${blog.id}`} fullWidth>
-                    Read Article
+                  <Button href={`/blogs/${blog.id}`} fullWidth variant="outline">
+                    Read Article →
                   </Button>
                 </div>
               </div>
             ))}
           </div>
           
+          {/* Pagination */}
           {blogs.length > 0 && (
-            <div className="mt-12 flex justify-center">
-              <nav className="flex items-center">
-                <Button variant="outline" className="mr-2" disabled>
-                  &laquo; Previous
+            <div className="mt-16 flex justify-center">
+              <nav className="flex items-center gap-2 p-2 rounded-xl bg-dark-100 border border-dark-100">
+                <Button variant="ghost" className="px-4" disabled>
+                  ← Previous
                 </Button>
-                <div className="flex items-center space-x-1">
-                  <span className="px-3 py-1 bg-primary-600 text-white rounded">1</span>
-                  <Button variant="ghost" className="px-3 py-1">2</Button>
-                  <Button variant="ghost" className="px-3 py-1">3</Button>
+                <div className="flex items-center gap-1 px-2">
+                  <span className="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-500 text-white font-medium">1</span>
+                  <button className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-dark-200 transition-colors">2</button>
+                  <button className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-dark-200 transition-colors">3</button>
+                  <span className="px-2 text-neutral-500">...</span>
+                  <button className="w-10 h-10 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-dark-200 transition-colors">10</button>
                 </div>
-                <Button variant="outline" className="ml-2">
-                  Next &raquo;
+                <Button variant="ghost" className="px-4">
+                  Next →
                 </Button>
               </nav>
             </div>

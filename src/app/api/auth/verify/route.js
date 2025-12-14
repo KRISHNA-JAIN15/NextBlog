@@ -45,7 +45,7 @@ export async function POST(req) {
     const token = generateToken(updatedUser);
 
     // Set auth cookie
-    setAuthCookie(token);
+    await setAuthCookie(token);
 
     return NextResponse.json({
       success: true,

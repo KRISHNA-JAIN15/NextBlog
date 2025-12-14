@@ -26,8 +26,9 @@ export function generateToken(user) {
  * Set auth token in HTTP-only cookie
  * @param {string} token - JWT token
  */
-export function setAuthCookie(token) {
-  cookies().set({
+export async function setAuthCookie(token) {
+  const cookieStore = await cookies();
+  cookieStore.set({
     name: "auth_token",
     value: token,
     httpOnly: true,
@@ -42,8 +43,9 @@ export function setAuthCookie(token) {
 /**
  * Remove auth token cookie
  */
-export function removeAuthCookie() {
-  cookies().delete("auth_token");
+export async function removeAuthCookie() {
+  const cookieStore = await cookies();
+  cookieStore.delete("auth_token");
 }
 
 /**
@@ -63,12 +65,12 @@ export function verifyToken(token) {
  * Get the current authenticated user from the request
  * @returns {Promise<Object|null>} User data from token or null if not authenticated
  */
-export function getCurrentUser() {
+export async function getCurrentUser() {
   try {
-    // Use the synchronous request cookies approach instead of the async cookies() API
-    // This prevents the "cookies() should be awaited" error
-    const token = cookies().get("auth_token")?.value;
-    
+    // Await the cookies() API as required in Next.js 15
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+
     if (!token) {
       return null;
     }

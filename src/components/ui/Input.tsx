@@ -15,13 +15,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={`mb-4 ${fullWidth ? 'w-full' : ''}`}>
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-neutral-700 mb-1">
+          <label htmlFor={inputId} className="block text-sm font-medium text-neutral-300 mb-2">
             {label}
           </label>
         )}
-        <div className="relative">
+        <div className="relative group">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-500">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-primary-400 transition-colors">
               {leftIcon}
             </div>
           )}
@@ -29,23 +29,40 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             ref={ref}
             className={`
-              block rounded-md shadow-sm 
-              ${leftIcon ? 'pl-10' : 'pl-4'} 
-              ${rightIcon ? 'pr-10' : 'pr-4'} 
-              py-2 border
-              ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-neutral-300 focus:ring-primary-500 focus:border-primary-500'} 
+              block rounded-xl shadow-sm 
+              ${leftIcon ? 'pl-12' : 'pl-4'} 
+              ${rightIcon ? 'pr-12' : 'pr-4'} 
+              py-3 
+              bg-dark-100 
+              border-2
+              text-neutral-100
+              placeholder-neutral-500
+              ${error 
+                ? 'border-red-500/50 focus:ring-red-500/50 focus:border-red-500' 
+                : 'border-dark-100 focus:ring-primary-500/50 focus:border-primary-500 hover:border-primary-500/30'
+              } 
               ${fullWidth ? 'w-full' : ''} 
+              transition-all duration-300
+              focus:outline-none focus:ring-2 focus:ring-offset-0
+              focus:bg-dark-200
               ${className}
             `}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-neutral-500">
+            <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-neutral-500 group-focus-within:text-primary-400 transition-colors">
               {rightIcon}
             </div>
           )}
+          {/* Subtle glow effect on focus */}
+          <div className="absolute inset-0 rounded-xl bg-primary-500/0 group-focus-within:bg-primary-500/5 pointer-events-none transition-all duration-300" />
         </div>
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          {error}
+        </p>}
       </div>
     );
   }

@@ -157,10 +157,10 @@ export const EmailVerification: React.FC = () => {
         </div>
         
         <div>
-          <h3 className="text-lg font-medium text-neutral-800 mb-2 text-center">Check your inbox</h3>
-          <p className="text-neutral-600 mb-6 text-center">
+          <h3 className="text-lg font-medium text-white mb-2 text-center">Check your inbox</h3>
+          <p className="text-gray-400 mb-6 text-center">
             We&apos;ve sent a 6-digit verification code to{' '}
-            <span className="font-medium">{email || 'your email'}</span>.
+            <span className="font-medium text-primary-400">{email || 'your email'}</span>.
             Please enter the code below to verify your account.
           </p>
           
@@ -201,7 +201,7 @@ export const EmailVerification: React.FC = () => {
             </form>
           )}
           
-          <p className="text-sm text-neutral-500 mb-6 text-center">
+          <p className="text-sm text-gray-500 mb-6 text-center">
             If you don&apos;t see the email, check your spam folder.
           </p>
           

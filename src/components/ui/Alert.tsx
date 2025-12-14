@@ -17,31 +17,31 @@ export const Alert: React.FC<AlertProps> = ({
   className = '',
   onClose
 }) => {
-  // Styles for different variants
+  // Styles for different variants - dark theme optimized
   const variantStyles = {
     info: {
-      container: 'bg-blue-50 border-blue-400',
-      icon: 'text-blue-400',
-      title: 'text-blue-800',
-      content: 'text-blue-700'
+      container: 'bg-primary-500/10 border-primary-500/30',
+      icon: 'text-primary-400',
+      title: 'text-primary-300',
+      content: 'text-primary-200'
     },
     success: {
-      container: 'bg-green-50 border-green-400',
-      icon: 'text-green-400',
-      title: 'text-green-800',
-      content: 'text-green-700'
+      container: 'bg-emerald-500/10 border-emerald-500/30',
+      icon: 'text-emerald-400',
+      title: 'text-emerald-300',
+      content: 'text-emerald-200'
     },
     warning: {
-      container: 'bg-yellow-50 border-yellow-400',
-      icon: 'text-yellow-400',
-      title: 'text-yellow-800',
-      content: 'text-yellow-700'
+      container: 'bg-amber-500/10 border-amber-500/30',
+      icon: 'text-amber-400',
+      title: 'text-amber-300',
+      content: 'text-amber-200'
     },
     error: {
-      container: 'bg-red-50 border-red-400',
+      container: 'bg-red-500/10 border-red-500/30',
       icon: 'text-red-400',
-      title: 'text-red-800',
-      content: 'text-red-700'
+      title: 'text-red-300',
+      content: 'text-red-200'
     }
   };
 
@@ -72,7 +72,7 @@ export const Alert: React.FC<AlertProps> = ({
   };
 
   return (
-    <div className={`rounded-md border px-4 py-3 ${container} ${className}`} role="alert">
+    <div className={`rounded-xl border px-4 py-3 backdrop-blur-sm ${container} ${className}`} role="alert">
       <div className="flex">
         <div className="flex-shrink-0">
           <div className={`${icon}`}>
@@ -90,11 +90,11 @@ export const Alert: React.FC<AlertProps> = ({
             <div className="-mx-1.5 -my-1.5">
               <button
                 type="button"
-                className={`inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                  variant === 'info' ? 'bg-blue-50 text-blue-500 hover:bg-blue-100 focus:ring-blue-600 focus:ring-offset-blue-50' :
-                  variant === 'success' ? 'bg-green-50 text-green-500 hover:bg-green-100 focus:ring-green-600 focus:ring-offset-green-50' :
-                  variant === 'warning' ? 'bg-yellow-50 text-yellow-500 hover:bg-yellow-100 focus:ring-yellow-600 focus:ring-offset-yellow-50' :
-                  'bg-red-50 text-red-500 hover:bg-red-100 focus:ring-red-600 focus:ring-offset-red-50'
+                className={`inline-flex rounded-lg p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
+                  variant === 'info' ? 'text-primary-400 hover:bg-primary-500/20 focus:ring-primary-500 focus:ring-offset-dark-100' :
+                  variant === 'success' ? 'text-emerald-400 hover:bg-emerald-500/20 focus:ring-emerald-500 focus:ring-offset-dark-100' :
+                  variant === 'warning' ? 'text-amber-400 hover:bg-amber-500/20 focus:ring-amber-500 focus:ring-offset-dark-100' :
+                  'text-red-400 hover:bg-red-500/20 focus:ring-red-500 focus:ring-offset-dark-100'
                 }`}
                 onClick={onClose}
               >

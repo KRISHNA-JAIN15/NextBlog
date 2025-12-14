@@ -14,8 +14,8 @@ export const Container: React.FC<ContainerProps> = ({
   const maxWidthClasses = {
     sm: 'max-w-screen-sm',
     md: 'max-w-screen-md',
-    lg: 'max-w-screen-lg',
-    xl: 'max-w-screen-xl',
+    lg: 'max-w-screen-xl',
+    xl: 'max-w-7xl',
     full: 'max-w-full',
   };
   
