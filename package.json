@@ -13,6 +13,7 @@
     "generate-jwt-secret": "node -e \"console.log('JWT_SECRET=' + require('crypto').randomBytes(32).toString('hex'))\""
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
     "@prisma/adapter-pg": "^7.1.0",
     "@tiptap/extension-color": "^3.13.0",
     "@tiptap/extension-image": "^3.13.0",
@@ -29,11 +30,13 @@
     "jsonwebtoken": "^9.0.2",
     "lottie-react": "^2.4.1",
     "next": "15.5.5",
+    "next-auth": "^4.24.13",
     "nodemailer": "^7.0.9",
     "pg": "^8.16.3",
     "razorpay": "^2.9.6",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-spinners": "^0.17.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

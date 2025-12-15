@@ -136,9 +136,11 @@ function NewPostForm() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const responseData = await response.json();
+        // Handle both API response formats: { id: ... } for create, { data: { id: ... } } for update
+        const blogId = responseData.data?.id || responseData.id || editId;
         alert(isDraft ? 'Draft saved successfully!' : 'Post published successfully!');
-        router.push(isDraft ? '/dashboard' : `/blogs/${data.id}`);
+        router.push(isDraft ? '/dashboard' : `/blogs/${blogId}`);
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to save post. Please try again.');

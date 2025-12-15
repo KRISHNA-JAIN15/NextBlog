@@ -28,6 +28,17 @@ export async function POST(req) {
       );
     }
 
+    // Check if user has a password (might be OAuth-only user)
+    if (!user.password) {
+      return NextResponse.json(
+        {
+          error:
+            "This account uses Google sign-in. Please use the 'Continue with Google' button.",
+        },
+        { status: 400 }
+      );
+    }
+
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {

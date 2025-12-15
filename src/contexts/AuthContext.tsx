@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 interface User {
   id: string;
@@ -28,6 +29,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { data: session, status } = useSession();
 
   const checkAuth = async () => {
     try {
@@ -42,7 +44,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (response.ok) {
         const data = await response.json();
-        setUser(data.user);
+        if (data.isAuthenticated && data.user) {
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
       } else {
         setUser(null);
       }
@@ -54,9 +60,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Check auth on mount and when NextAuth session changes
   useEffect(() => {
-    checkAuth();
-  }, []);
+    if (status !== 'loading') {
+      checkAuth();
+    }
+  }, [status, session]);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -108,6 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     setIsLoading(true);
     try {
+      // Sign out from custom JWT auth
       await fetch('/api/auth/logout', {
         method: 'POST',
         headers: {
@@ -115,6 +125,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         },
         credentials: 'include',
       });
+      
+      // Also sign out from NextAuth (Google OAuth)
+      if (session) {
+        await signOut({ redirect: false });
+      }
+      
       setUser(null);
     } finally {
       setIsLoading(false);

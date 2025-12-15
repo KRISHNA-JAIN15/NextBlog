@@ -68,20 +68,20 @@ export function verifyToken(token) {
  */
 export async function getCurrentUser() {
   try {
-    // Await the cookies() API as required in Next.js 15
+    // First try custom JWT auth
     const cookieStore = await cookies();
     const token = cookieStore.get("auth_token")?.value;
 
-    if (!token) {
-      return null;
+    if (token) {
+      const decoded = verifyToken(token);
+      if (decoded) {
+        return decoded;
+      }
     }
 
-    const decoded = verifyToken(token);
-    if (!decoded) {
-      return null;
-    }
-
-    return decoded;
+    // If no JWT token, the caller should check NextAuth session separately
+    // (NextAuth session check requires server-side context that differs between route handlers)
+    return null;
   } catch (error) {
     console.error("Authentication error:", error);
     return null;

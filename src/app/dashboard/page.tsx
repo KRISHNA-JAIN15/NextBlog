@@ -21,23 +21,27 @@ interface SubscriptionData {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('published');
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
 
-  // Redirect if not logged in
+  // Only redirect if auth is done loading and there's no user
+  // The middleware handles protection, this is just a fallback
   useEffect(() => {
-    if (!user) {
+    if (!isLoading && !user) {
       router.push('/login');
     }
-  }, [user, router]);
+  }, [user, isLoading, router]);
 
+  // Only fetch data once auth is loaded and user exists
   useEffect(() => {
-    fetchBlogs();
-    fetchSubscriptionStatus();
-  }, []);
+    if (!isLoading && user) {
+      fetchBlogs();
+      fetchSubscriptionStatus();
+    }
+  }, [isLoading, user]);
 
   const fetchBlogs = async () => {
     try {
@@ -91,6 +95,22 @@ export default function DashboardPage() {
 
   const published = blogs.filter(b => b.published);
   const drafts = blogs.filter(b => !b.published);
+
+  // Show loading while auth is being checked
+  if (isLoading) {
+    return (
+      <Page>
+        <Container className="py-12">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+              <p className="text-neutral-400">Loading...</p>
+            </div>
+          </div>
+        </Container>
+      </Page>
+    );
+  }
   
   return (
     <Page>

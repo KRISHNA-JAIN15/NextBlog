@@ -1,9 +1,36 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../[...nextauth]/route";
 import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
+    // First, check for NextAuth session (Google OAuth)
+    const nextAuthSession = await getServerSession(authOptions);
+
+    if (nextAuthSession?.user) {
+      // User is authenticated via NextAuth (Google OAuth)
+      const user = await prisma.user.findUnique({
+        where: { email: nextAuthSession.user.email },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          verified: true,
+          credits: true,
+        },
+      });
+
+      if (user) {
+        return NextResponse.json({
+          isAuthenticated: true,
+          user,
+        });
+      }
+    }
+
+    // Fall back to custom JWT auth
     const userData = await getCurrentUser();
 
     if (!userData) {
