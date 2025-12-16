@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation';
 import { CommentSection } from '@/components/blog/CommentSection';
 import { ShareButton } from '@/components/blog/ShareButton';
 import { PremiumGate } from '@/components/blog/PremiumGate';
+import prisma from '@/lib/prisma';
 
 interface Params {
   id: string;
@@ -46,21 +47,59 @@ interface BlogResponse {
   data: BlogPost;
 }
 
-// Function to get a blog by ID from API
+// Function to get a blog by ID - Direct database query
 async function getBlogById(id: string): Promise<BlogPost | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  
   try {
-    const res = await fetch(`${baseUrl}/api/blog/${id}`, {
-      cache: 'no-store',
-    });
+    const blogId = parseInt(id);
     
-    if (!res.ok) {
+    if (isNaN(blogId)) {
       return null;
     }
     
-    const data: BlogResponse = await res.json();
-    return data.success ? data.data : null;
+    const blog = await prisma.blogPost.findUnique({
+      where: {
+        id: blogId,
+        published: true,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        _count: {
+          select: {
+            Comment: true,
+          },
+        },
+      },
+    });
+    
+    if (!blog) {
+      return null;
+    }
+    
+    return {
+      id: blog.id,
+      title: blog.title,
+      content: blog.content,
+      excerpt: blog.excerpt,
+      coverImage: blog.coverImage,
+      topic: blog.topic,
+      published: blog.published,
+      type: blog.type,
+      authorId: blog.authorId,
+      createdAt: blog.createdAt.toISOString(),
+      viewCount: blog.viewCount,
+      author: {
+        id: blog.author.id,
+        name: blog.author.name,
+        email: blog.author.email,
+      },
+      commentCount: blog._count.Comment,
+    };
   } catch (error) {
     console.error('Failed to fetch blog:', error);
     return null;

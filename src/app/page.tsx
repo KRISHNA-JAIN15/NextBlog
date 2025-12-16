@@ -5,6 +5,7 @@ import { Page } from '@/components/layout/Page';
 import { Button } from '@/components/ui/Button';
 import { LottieAnimation } from '@/components/ui/LottieAnimation';
 import animationData from '@/../public/lottie.json';
+import prisma from '@/lib/prisma';
 
 interface FeaturedBlog {
   id: number;
@@ -18,21 +19,39 @@ interface FeaturedBlog {
   viewCount: number;
 }
 
-// Function to get featured blog posts (most viewed)
+// Function to get featured blog posts (most viewed) - Direct database query
 async function getFeaturedBlogs(): Promise<FeaturedBlog[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  
   try {
-    const res = await fetch(`${baseUrl}/api/blog/featured?limit=3`, {
-      next: { revalidate: 60 }, // Revalidate every 60 seconds
+    const featuredBlogs = await prisma.blogPost.findMany({
+      where: {
+        published: true,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        viewCount: 'desc',
+      },
+      take: 3,
     });
-    
-    if (!res.ok) {
-      return [];
-    }
-    
-    const data = await res.json();
-    return data.success ? data.data : [];
+
+    return featuredBlogs.map((post) => ({
+      id: post.id,
+      title: post.title,
+      excerpt: post.excerpt,
+      coverImage: post.coverImage,
+      topic: post.topic,
+      type: post.type,
+      author: post.author.name || 'Anonymous',
+      createdAt: post.createdAt.toISOString(),
+      viewCount: post.viewCount,
+    }));
   } catch (error) {
     console.error('Failed to fetch featured blogs:', error);
     return [];

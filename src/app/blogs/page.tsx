@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SearchBar } from '@/components/blog/SearchBar';
+import prisma from '@/lib/prisma';
 
 export const metadata = {
   title: 'Blogs | NextBlog',
@@ -50,32 +51,90 @@ interface BlogsResponse {
   };
 }
 
-// Function to get blogs from API
+// Function to get blogs - Direct database query
 async function getBlogs(page: number = 1, limit: number = 9, topic?: string, type?: string, search?: string): Promise<BlogsResponse> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  const params = new URLSearchParams({
-    page: page.toString(),
-    limit: limit.toString(),
-  });
-  
-  if (topic) params.append('topic', topic);
-  if (type) params.append('type', type);
-  if (search) params.append('search', search);
-  
   try {
-    const res = await fetch(`${baseUrl}/api/blog?${params.toString()}`, {
-      cache: 'no-store',
-    });
+    const skip = (page - 1) * limit;
     
-    if (!res.ok) {
-      return {
-        success: false,
-        data: [],
-        pagination: { total: 0, page: 1, limit: 9, pages: 0 }
-      };
+    // Build where clause
+    const where: any = {
+      published: true,
+    };
+    
+    if (topic) {
+      where.topic = topic;
     }
     
-    return res.json();
+    if (type) {
+      where.type = type;
+    }
+    
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { excerpt: { contains: search, mode: 'insensitive' } },
+        { content: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    
+    // Get total count and blogs
+    const [total, blogs] = await Promise.all([
+      prisma.blogPost.count({ where }),
+      prisma.blogPost.findMany({
+        where,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          _count: {
+            select: {
+              Comment: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+    ]);
+    
+    const formattedBlogs = blogs.map((post) => ({
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt,
+      coverImage: post.coverImage,
+      topic: post.topic,
+      published: post.published,
+      type: post.type,
+      authorId: post.authorId,
+      createdAt: post.createdAt.toISOString(),
+      author: {
+        id: post.author.id,
+        name: post.author.name,
+        email: post.author.email,
+      },
+      commentCount: post._count.Comment,
+    }));
+    
+    const pages = Math.ceil(total / limit);
+    
+    return {
+      success: true,
+      data: formattedBlogs,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages,
+      },
+    };
   } catch (error) {
     console.error('Failed to fetch blogs:', error);
     return {
