@@ -41,7 +41,7 @@ async function getFeaturedBlogs(): Promise<FeaturedBlog[]> {
       take: 3,
     });
 
-    return featuredBlogs.map((post) => ({
+    return featuredBlogs.map((post: any) => ({
       id: post.id,
       title: post.title,
       excerpt: post.excerpt,

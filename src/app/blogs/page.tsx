@@ -66,7 +66,7 @@ async function getBlogs(page: number = 1, limit: number = 9, topic?: string, typ
     }
     
     if (type) {
-      where.type = type;
+      where.type = type as 'FREE' | 'PAID';
     }
     
     if (search) {
@@ -104,7 +104,7 @@ async function getBlogs(page: number = 1, limit: number = 9, topic?: string, typ
       }),
     ]);
     
-    const formattedBlogs = blogs.map((post) => ({
+    const formattedBlogs = blogs.map((post: any) => ({
       id: post.id,
       title: post.title,
       content: post.content,
