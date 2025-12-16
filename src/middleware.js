@@ -10,7 +10,11 @@ const publicPaths = [
   "/api/auth/session",
   "/api/auth/csrf",
   "/api/auth/providers",
+  "/api/auth/logout",
+  "/api/blog/featured",
+  "/api/db-status",
   "/",
+  "/blogs",
 ];
 
 // Auth pages that authenticated users shouldn't access

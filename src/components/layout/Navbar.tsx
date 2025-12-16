@@ -13,7 +13,7 @@ export const Navbar: React.FC = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      router.push('/login');
+      // Redirect is now handled in AuthContext
     } catch (error) {
       console.error('Logout failed', error);
     }

@@ -132,6 +132,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       
       setUser(null);
+      
+      // Redirect to home page after logout
+      window.location.href = '/';
     } finally {
       setIsLoading(false);
     }
