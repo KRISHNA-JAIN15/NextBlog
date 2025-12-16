@@ -14,7 +14,7 @@ interface FeaturedBlog {
   topic: string;
   type: 'FREE' | 'PAID';
   author: string;
-  createdAt: string;
+  createdAt: string;z
   viewCount: number;
 }
 
@@ -76,7 +76,7 @@ export default async function Home() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <Button href="/register" size="lg">
+                <Button href="/signup" size="lg">
                   Get Started Free
                 </Button>
                 <Button href="/blogs" variant="outline" size="lg">
@@ -120,7 +120,7 @@ export default async function Home() {
       </section>
 
       {/* Featured Posts */}
-      <section className="py-24 relative">
+      <section className="py-24 relative mt-[-100px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dark-100/50 to-transparent"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -266,7 +266,7 @@ export default async function Home() {
             <p className="text-lg text-neutral-400 mb-8 max-w-2xl mx-auto">
               Join thousands of writers who have already found their voice on NextBlog.
             </p>
-            <Button href="/register" size="lg" variant="accent">
+            <Button href="/signup" size="lg" variant="accent">
               Sign Up Now — It&apos;s Free
             </Button>
           </div>

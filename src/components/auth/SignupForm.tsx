@@ -194,7 +194,7 @@ export const SignupForm: React.FC = () => {
             <div className="w-full border-t border-dark-100"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-dark-100 text-neutral-500">or continue with</span>
+            <span className="px-4 bg-dark-100 text-neutral-500 mt-6">or continue with</span>
           </div>
         </div>
         

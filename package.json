@@ -10,7 +10,11 @@
     "prisma": "prisma",
     "prisma:generate": "prisma generate",
     "prisma:db:push": "prisma db push",
+    "prisma:seed": "node prisma/seed.js",
     "generate-jwt-secret": "node -e \"console.log('JWT_SECRET=' + require('crypto').randomBytes(32).toString('hex'))\""
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

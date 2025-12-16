@@ -11,7 +11,7 @@ export const metadata = {
 export default function SignupPage() {
   return (
     <Page>
-      <Container className="py-16 md:py-24">
+      <Container className="py-16 md:py-24 mt-[-102px]">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 mx-auto flex items-center justify-center mb-4">
