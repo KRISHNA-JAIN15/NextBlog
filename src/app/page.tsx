@@ -14,7 +14,7 @@ interface FeaturedBlog {
   topic: string;
   type: 'FREE' | 'PAID';
   author: string;
-  createdAt: string;z
+  createdAt: string;
   viewCount: number;
 }
 

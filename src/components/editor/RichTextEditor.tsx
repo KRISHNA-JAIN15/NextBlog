@@ -16,21 +16,25 @@ interface RichTextEditorProps {
   placeholder?: string;
 }
 
-const MenuBar = ({ editor }: any) => {
-  if (!editor) {
-    return null;
-  }
+import { Editor } from '@tiptap/react';
 
+interface MenuBarProps {
+  editor: Editor | null;
+}
+
+const MenuBar = ({ editor }: MenuBarProps) => {
   const addImage = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     const url = window.prompt('Enter image URL');
-    if (url) {
+    if (url && editor) {
       editor.chain().focus().setImage({ src: url }).run();
     }
   }, [editor]);
 
   const setLink = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
+    if (!editor) return;
+    
     const previousUrl = editor.getAttributes('link').href;
     const url = window.prompt('Enter URL', previousUrl);
 
@@ -45,6 +49,10 @@ const MenuBar = ({ editor }: any) => {
 
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
   }, [editor]);
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <div className="border-b border-neutral-700 bg-neutral-800/50 p-3 flex flex-wrap gap-2 rounded-t-xl">
@@ -294,7 +302,7 @@ const MenuBar = ({ editor }: any) => {
   );
 };
 
-export const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange, placeholder = 'Start writing your blog post...' }) => {
+export const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, onChange }) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({

@@ -80,7 +80,7 @@ export const SignupForm: React.FC = () => {
     setIsGoogleLoading(true);
     try {
       await signIn('google', { callbackUrl: '/dashboard' });
-    } catch (err) {
+    } catch {
       setError('Failed to sign up with Google');
       setIsGoogleLoading(false);
     }

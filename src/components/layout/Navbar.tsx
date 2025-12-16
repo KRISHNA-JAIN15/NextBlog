@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '../ui/Button';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const Navbar: React.FC = () => {

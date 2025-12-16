@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { withAuth, withVerifiedUser } from "@/middleware/auth";
+import { withVerifiedUser } from "@/middleware/auth";
 
 // Get all blog posts with optional filtering - accessible to anyone
 export async function GET(req) {
@@ -98,7 +98,6 @@ async function handler(req) {
       content,
       excerpt,
       coverImage,
-      tags = [],
       type = "FREE",
       topic = "TECHNOLOGY",
       published = true,

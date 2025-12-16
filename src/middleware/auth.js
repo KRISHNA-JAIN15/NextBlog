@@ -28,7 +28,7 @@ async function getAuthenticatedUser(req) {
         return user;
       }
     }
-  } catch (error) {
+  } catch {
     // NextAuth session check failed, try custom auth
   }
 

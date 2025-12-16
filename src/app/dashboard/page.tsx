@@ -22,7 +22,16 @@ interface SubscriptionData {
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isLoading } = useAuth();
-  const [blogs, setBlogs] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<Array<{
+    id: number;
+    title: string;
+    excerpt: string | null;
+    topic: string;
+    type: string;
+    published: boolean;
+    createdAt: string;
+    viewCount: number;
+  }>>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('published');
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);

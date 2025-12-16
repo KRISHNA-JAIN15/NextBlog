@@ -62,7 +62,7 @@ export const LoginForm: React.FC = () => {
     setIsGoogleLoading(true);
     try {
       await signIn('google', { callbackUrl: '/dashboard' });
-    } catch (err) {
+    } catch {
       setError('Failed to sign in with Google');
       setIsGoogleLoading(false);
     }

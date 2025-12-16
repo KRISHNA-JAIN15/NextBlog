@@ -22,7 +22,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
           url: shareUrl,
         });
         return;
-      } catch (err) {
+      } catch {
         // User cancelled or error, fall back to clipboard
       }
     }
@@ -36,8 +36,8 @@ export function ShareButton({ title, url }: ShareButtonProps) {
         setCopied(false);
         setShowTooltip(false);
       }, 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    } catch {
+      console.error('Failed to copy');
     }
   };
 
