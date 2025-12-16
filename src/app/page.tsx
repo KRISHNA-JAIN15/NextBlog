@@ -24,7 +24,7 @@ async function getFeaturedBlogs(): Promise<FeaturedBlog[]> {
   
   try {
     const res = await fetch(`${baseUrl}/api/blog/featured?limit=3`, {
-      cache: 'no-store',
+      next: { revalidate: 60 }, // Revalidate every 60 seconds
     });
     
     if (!res.ok) {
