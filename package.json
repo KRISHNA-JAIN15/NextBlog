@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:no-turbo": "next dev",
-    "build": "next build --turbopack",
+    "build": "prisma generate && next build --turbopack",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
     "prisma": "prisma",
